@@ -1,0 +1,35 @@
+# Resilience4J
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      circuit-breaker-instance-resilience4j-service:
+        failure-rate-threshold: 60 # percentage threshold which the circuit breaker will move from closed to open state
+        wait-duration-in-open-state: 5000 # time in milliseconds, in which the circuit breaker is to stay in open state before
+                                          # moving to half open state
+        permitted-number-of-call-in-half-open-state: 10
+        minimum-number-of-call: 10 # The number of call after which the error rate is calculated.
+  ratelimiter:
+    instances:
+      rl-circuit-breaker-instance-resilience4j-service:
+        limit-refresh-period: 200ns
+        limit-for-period: 40 # The amx number of calls which that con by call in the time specified by limit-refresh-period
+        timeout-duration: 3s # The max number amount of time a call can last
+  thread-pool-bulkhead:
+    instances:
+      tp-instance-resilience4j-service:
+        queue-capacity: 2 # The max number of calls which can be queued if the thread pool is saturated
+        core-thread-pool-size: 4 # The number of available threads in the thread pool
+  timelimiter:
+    instances:
+      tl-instance-resilience4j-service:
+        timeout-duration: 2s # The max amount of time a call can last
+        cancel-running-future: false # Do not cancel the Running Completable Futures After TimeOut
+  retry:
+    instances:
+      rt-instance-resilience4j-service:
+        max-attempts: 3
+        wait-duration: 1s # After this time, the call will be considered a failure and will be retried
+        retry-exceptions: # The exceptions list that will trigger a retry
+          - java.lang.RuntimeException
+          - java.io.IOException
